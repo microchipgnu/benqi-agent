@@ -5,9 +5,6 @@ const bitteConfig = JSON.parse(process.env.BITTE_CONFIG || "{}");
 if (!key?.accountId) {
   console.error("no account");
 }
-if (!bitteConfig?.url) {
-  console.error("no tunnel url");
-}
 
 export async function GET() {
   const pluginData = {
