@@ -19,7 +19,7 @@ export async function GET() {
     },
     servers: [
       {
-        url: bitteConfig.url,
+        url: bitteConfig.url || "https://near-cow-agent.vercel.app/",
       },
     ],
     "x-mb": {
