@@ -71,9 +71,7 @@ export async function getTokenDetails(
   // Token data comes from https://dune.com/queries/4055949
   //  curl -X GET https://api.dune.com/api/v1/query/4055949/results/csv -H "x-dune-api-key: $DUNE_API_KEY"  > tokens.csv
   if (!tokenMap) {
-    tokenMap = await loadTokenMapping(
-      "src/app/api/tools/cowswap/util/tokenlist.csv",
-    );
+    tokenMap = await loadTokenMapping("public/data/tokenlist.csv");
   }
   return tokenMap[chainId][symbolOrAddress];
 }

@@ -11,7 +11,7 @@ export async function GET() {
     openapi: "3.0.0",
     info: {
       title: "Bitte CoWSwap Agent",
-      description: "API for interactiions with CoW Protocol",
+      description: "API for interactions with CoW Protocol",
       version: "1.0.0",
     },
     servers: [
@@ -23,9 +23,10 @@ export async function GET() {
       "account-id": key.accountId,
       assistant: {
         name: "CoWSwap Assistant",
-        description: "An assistant that generates transaction data for CoW Protocol Interactions",
+        description:
+          "An assistant that generates transaction data for CoW Protocol Interactions",
         instructions:
-          "Encodes transactions as signature requests on EVM networks. This assistant is only for EVM networks. Passes the the transaction fields of the response to generate-evm-tx tool for signing and displays the meta content of the response to the user after signing. For selling native assets, such as ETH, xDAI, POL, BNB it uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken. It does not infer the chainId or network name which must explicitly be provided by the user.",
+          "Encodes transactions as signature requests on EVM networks. This assistant is only for EVM networks. Passes the the transaction fields of the response to generate-evm-tx tool for signing and displays the meta content of the response to the user after signing. For selling native assets, such as ETH, xDAI, POL, BNB it uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken. It does not infer the chainId.",
         tools: [{ type: "generate-evm-tx" }],
       },
     },
