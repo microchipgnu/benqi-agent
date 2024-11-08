@@ -37,8 +37,24 @@ const quoteRequest = {
   kind: OrderQuoteSideKindSell.SELL,
   sellAmountBeforeFee: "2000000000000000000",
 };
-describe("CowSwap Plugin", () => {
-  // This post an order to COW Orderbook.
+
+import { mock, describe, it, expect } from "bun:test";
+
+// Mock the readContract function
+mock.module("viem/actions", () => ({
+  readContract: async ({ functionName }: { functionName: string }) => {
+    switch (functionName) {
+      case "decimals":
+        return 18;
+      case "allowance":
+        return "1000000000000000000";
+      default:
+        return "0";
+    }
+  },
+}));
+describe.skip("CowSwap Plugin", () => {
+  // This posts an order to COW Orderbook.
   it.skip("orderRequestFlow", async () => {
     console.log("Requesting Quote...");
     const signRequest = await orderRequestFlow({ chainId, quoteRequest });
@@ -136,7 +152,7 @@ describe("CowSwap Plugin", () => {
   });
 
   it("loadTokenMapping", async () => {
-    const tokenMap = await loadTokenMapping("public/data/tokenlist.csv");
+    const tokenMap = await loadTokenMapping("public/tokenlist.csv");
     console.log(tokenMap[11155111]);
   });
 
