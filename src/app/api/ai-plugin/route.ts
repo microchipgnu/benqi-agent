@@ -58,6 +58,62 @@ export async function GET() {
           },
         },
       },
+      "/api/tools/balances": {
+        get: {
+          tags: ["balances"],
+          summary: "Get Token Balances",
+          description: "Returns token balances for the connected wallet",
+          operationId: "get-balances",
+          parameters: [
+            {
+              in: "query",
+              name: "chainId",
+              required: true,
+              schema: {
+                type: "number",
+              },
+              description: "The network ID to check balances on",
+            },
+          ],
+          responses: {
+            "200": {
+              description: "List of token balances",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        token: {
+                          $ref: "#/components/schemas/Address",
+                        },
+                        balance: {
+                          type: "string",
+                          description: "Token balance in smallest units (wei)",
+                          example: "1000000000000000000",
+                        },
+                        symbol: {
+                          type: "string",
+                          description: "Token symbol",
+                          example: "USDC",
+                        },
+                        decimals: {
+                          type: "number",
+                          description: "Token decimals",
+                          example: 18,
+                        },
+                      },
+                      required: ["token", "balance", "symbol", "decimals"],
+                    },
+                  },
+                },
+              },
+            },
+            "400": { $ref: "#/components/responses/BadRequest400" },
+          },
+        },
+      },
       "/api/tools/cowswap": {
         post: {
           tags: ["cowswap"],
