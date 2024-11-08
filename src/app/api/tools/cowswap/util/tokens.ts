@@ -3,9 +3,6 @@ import csv from "csv-parser";
 import { Address, erc20Abi, getAddress, isAddress } from "viem";
 import { getClient } from "near-safe";
 import path from "path";
-import { fileURLToPath } from "url";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 interface TokenInfo {
   address: Address;
@@ -75,8 +72,8 @@ export async function getTokenDetails(
   // Token data comes from https://dune.com/queries/4055949
   //  curl -X GET https://api.dune.com/api/v1/query/4055949/results/csv -H "x-dune-api-key: $DUNE_API_KEY"  > tokens.csv
   if (!tokenMap) {
-    const absolutePath = path.join(__dirname, "./tokenlist.csv");
-    tokenMap = await loadTokenMapping(absolutePath);
+    const filePath = path.join(process.cwd(), 'public', 'tokenlist.csv');
+    tokenMap = await loadTokenMapping(filePath);
    }
   return tokenMap[chainId][symbolOrAddress];
 }
