@@ -31,4 +31,4 @@ jobs:
           bun lint
           bun test
       - name: Build
-        run: 
+        run: bun build:next

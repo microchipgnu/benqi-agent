@@ -72,9 +72,9 @@ export async function getTokenDetails(
   // Token data comes from https://dune.com/queries/4055949
   //  curl -X GET https://api.dune.com/api/v1/query/4055949/results/csv -H "x-dune-api-key: $DUNE_API_KEY"  > tokens.csv
   if (!tokenMap) {
-    const filePath = path.join(process.cwd(), 'public', 'tokenlist.csv');
+    const filePath = path.join(process.cwd(), "public", "tokenlist.csv");
     tokenMap = await loadTokenMapping(filePath);
-   }
+  }
   return tokenMap[chainId][symbolOrAddress];
 }
 
