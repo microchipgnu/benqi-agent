@@ -18,9 +18,9 @@
     "next": "15.0.1",
     "react": "19.0.0-rc-69d4b800-20241021",
     "react-dom": "19.0.0-rc-69d4b800-20241021",
-    "swagger-ui-react": "^5.18.1",
+    "swagger-ui-react": "^5.18.2",
     "vercel-url": "^0.2.1",
-    "viem": "^2.21.41",
+    "viem": "^2.21.44",
     "zerion-sdk": "^0.0.6"
   },
   "devDependencies": {
@@ -37,9 +37,7 @@
     "eslint-config-next": "15.0.1",
     "jest": "^29.7.0",
     "make-agent": "^0.0.24-rc.2",
-    "postcss": "^8.4.47",
     "prettier": "^3.3.3",
-    "tailwindcss": "^3.4.14",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.6.3"
