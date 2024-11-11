@@ -4,12 +4,12 @@ import {
   buildAndPostAppData,
   createOrder,
   isNativeAsset,
-  ParsedQuoteRequest,
   sellTokenApprovalTx,
   setPresignatureTx,
 } from "./util/protocol";
 import { OrderBookApi } from "@cowprotocol/cow-sdk";
 import { signRequestFor } from "../util";
+import { ParsedQuoteRequest } from "./util/parse";
 import { getNativeAsset, wrapMetaTransaction } from "../weth/utils";
 
 const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
