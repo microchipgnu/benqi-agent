@@ -21,7 +21,7 @@
     "swagger-ui-react": "^5.18.2",
     "vercel-url": "^0.2.1",
     "viem": "^2.21.44",
-    "zerion-sdk": "^0.0.6"
+    "zerion-sdk": "^0.0.7"
   },
   "devDependencies": {
     "@cowprotocol/app-data": "^2.3.0",

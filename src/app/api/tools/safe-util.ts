@@ -80,7 +80,8 @@ export async function getSafeBalances(
             options: { supportedChains: [chainId] },
           });
           return zerionToTokenBalances(balances.tokens);
-        } catch {
+        } catch (error) {
+          console.error("Error fetching Zerion balances:", error);
           return [];
         }
       }
