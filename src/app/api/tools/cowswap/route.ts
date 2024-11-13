@@ -9,6 +9,7 @@ export async function POST(req: NextRequest): Promise<NextResponse> {
     const parsedRequest = await parseQuoteRequest(req);
     console.log("POST Request for quote:", parsedRequest);
     const orderData = await orderRequestFlow(parsedRequest);
+    console.log("Responding with", orderData);
     return NextResponse.json(orderData, { status: 200 });
   } catch (e: unknown) {
     if (
