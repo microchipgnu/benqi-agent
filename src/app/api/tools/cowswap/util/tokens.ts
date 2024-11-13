@@ -70,13 +70,13 @@ export async function getTokenDetails(
   chainId: number,
   symbolOrAddress: string,
 ): Promise<TokenInfo> {
-  if (isAddress(symbolOrAddress)) {
+  if (isAddress(symbolOrAddress, {strict: false})) {
     return {
       address: symbolOrAddress as Address,
       decimals: await getTokenDecimals(chainId, symbolOrAddress),
     };
   }
-  console.log("Seeking TokenMap for Symbol -> Address conversion");
+  console.log("Seeking TokenMap for Symbol -> Address conversion", symbolOrAddress);
   if (!tokenMap) {
     await tokenMapPromise;
   }

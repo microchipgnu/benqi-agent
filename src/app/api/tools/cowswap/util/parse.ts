@@ -62,7 +62,6 @@ function sellTokenAvailable(
   balances: TokenBalance[],
   sellTokenSymbolOrAddress: string,
 ): TokenInfo {
-  console.log("sellTokenAvailable", balances, sellTokenSymbolOrAddress);
   let balance: TokenBalance | undefined;
   if (isAddress(sellTokenSymbolOrAddress, { strict: false })) {
     balance = balances.find(
