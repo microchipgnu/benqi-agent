@@ -78,6 +78,7 @@ export async function orderRequestFlow({
     sellAmount: quoteResponse.quote.sellAmount,
   });
   if (approvalTx) {
+    console.debug("Appending token approval...", approvalTx);
     metaTransactions.push(approvalTx);
   }
 

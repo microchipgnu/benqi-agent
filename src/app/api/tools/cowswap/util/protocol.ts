@@ -51,7 +51,7 @@ export async function sellTokenApprovalTx(args: {
   sellAmount: string;
 }): Promise<MetaTransaction | null> {
   const { from, sellToken, chainId, sellAmount } = args;
-
+  console.log(`Checking approval for account=${from}, token=${sellToken} on chainId=${chainId}`);
   const allowance = await checkAllowance(
     getAddress(from),
     getAddress(sellToken),
