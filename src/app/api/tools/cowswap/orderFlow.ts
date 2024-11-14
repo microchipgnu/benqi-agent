@@ -1,7 +1,7 @@
 import { MetaTransaction, SignRequestData } from "near-safe";
 import {
   applySlippage,
-  // buildAndPostAppData,
+  buildAndPostAppData,
   createOrder,
   isNativeAsset,
   sellTokenApprovalTx,
@@ -13,11 +13,11 @@ import { ParsedQuoteRequest } from "./util/parse";
 import { getNativeAsset, wrapMetaTransaction } from "../weth/utils";
 
 const slippageBps = parseInt(process.env.SLIPPAGE_BPS || "100");
-// const referralAddress =
-//   process.env.REFERRAL_ADDRESS || "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd";
-// const partnerAddress =
-//   process.env.PARTNER_ADDRESS || "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA";
-// const partnerBps = parseInt(process.env.PARTNER_BPS || "10");
+const referralAddress =
+  process.env.REFERRAL_ADDRESS || "0x8d99F8b2710e6A3B94d9bf465A98E5273069aCBd";
+const partnerAddress =
+  process.env.PARTNER_ADDRESS || "0x54F08c27e75BeA0cdDdb8aA9D69FD61551B19BbA";
+const partnerBps = parseInt(process.env.PARTNER_BPS || "10");
 
 export async function orderRequestFlow({
   chainId,
@@ -67,18 +67,18 @@ export async function orderRequestFlow({
     ...applySlippage(quoteResponse.quote, slippageBps),
   };
 
-  quoteResponse.quote.appData =
-    "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80";
+  // quoteResponse.quote.appData =
+  //   "0x5a8bb9f6dd0c7f1b4730d9c5a811c2dfe559e67ce9b5ed6965b05e59b8c86b80";
   // TODO: This shit is too Slow.
-  // await buildAndPostAppData(
-  //   orderbook,
-  //   "bitte.ai/CowAgent",
-  //   referralAddress,
-  //   {
-  //     recipient: partnerAddress,
-  //     bps: partnerBps,
-  //   },
-  // );
+  quoteResponse.quote.appData = await buildAndPostAppData(
+    orderbook,
+    "bitte.ai/CowAgent",
+    referralAddress,
+    {
+      recipient: partnerAddress,
+      bps: partnerBps,
+    },
+  );
   // Post Unsigned Order to Orderbook (this might be spam if the user doesn't sign)
   console.log("Creating Order with", quoteResponse);
   const order = createOrder(quoteResponse);
