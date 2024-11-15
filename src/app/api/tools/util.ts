@@ -40,7 +40,7 @@ export async function validateRequest(
   if (!accountId || !evmAddress) {
     return NextResponse.json(
       { error: "Missing accountId or evmAddress in metadata" },
-      { status: 415 },
+      { status: 400 },
     );
   }
 
