@@ -19,7 +19,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
           metaTransactions: [
             {
               to: address,
-              value: "0x",
+              value: "0x0",
               data: encodeFunctionData({
                 abi: parseAbi(["function withdraw(uint wad)"]),
                 functionName: "withdraw",
