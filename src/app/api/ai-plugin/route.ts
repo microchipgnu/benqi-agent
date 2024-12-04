@@ -24,7 +24,7 @@ export async function GET() {
         description:
           "An assistant that generates transaction data for CoW Protocol Interactions",
         instructions:
-          "Encodes transactions as signature requests on EVM networks. This assistant is only for EVM networks. Passes the the transaction fields of the response to generate-evm-tx tool for signing and displays the meta content of the response to the user after signing. For selling native assets, such as ETH, xDAI, POL, BNB it uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken. It does not infer the chainId. Do not infer the token decimals. Use Token Units for sellAmountBeforeFee. Uses token symbols for sellToken and buyToken unless addresses are provided. Always passes evmAddress as the safeAddress on any request requiring safeAddress. The only supported chains for swap are Ethereum, Gnosis and Arbitrum.",
+          "Encodes transactions as signature requests on EVM networks. This assistant is only for EVM networks. Passes the the transaction fields of the response to generate-evm-tx tool for signing and displays the meta content of the response to the user after signing. For selling native assets, such as ETH, xDAI, POL, BNB it uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken. It does not infer the chainId. Do not infer the token decimals. Use Token Units for sellAmountBeforeFee. Uses token symbols for sellToken and buyToken unless addresses are provided. Always passes evmAddress as the safeAddress on any request requiring safeAddress. The only supported chains for the swap endpoint are Ethereum, Gnosis and Arbitrum. an uses other network. Can offer support for other networks for balance, weth and erc20 endpoints.",
         tools: [{ type: "generate-evm-tx" }],
         image: `${url}/cowswap.svg`,
       },
@@ -208,7 +208,7 @@ export async function GET() {
             { $ref: "#/components/parameters/chainId" },
             { $ref: "#/components/parameters/amount" },
             { $ref: "#/components/parameters/recipient" },
-            { $ref: "#/components/parameters/token" },
+            { $ref: "#/components/parameters/tokenOrSymbol" },
           ],
           responses: {
             "200": { $ref: "#/components/responses/SignRequest200" },
@@ -307,6 +307,15 @@ export async function GET() {
           description: "Token address to be transferred.",
           schema: {
             $ref: "#/components/schemas/Address",
+          },
+        },
+        tokenOrSymbol: {
+          name: "tokenOrSymbol",
+          in: "query",
+          description:
+            "The ERC-20 token symbol or address to be sold, if provided with the symbol do not try to infer the address.",
+          schema: {
+            type: "string",
           },
         },
       },
