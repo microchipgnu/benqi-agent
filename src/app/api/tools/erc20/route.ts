@@ -16,7 +16,7 @@ import { getTokenMap } from "../util";
 interface Input {
   chainId: number;
   amount: number;
-  token: string;
+  tokenOrSymbol: string;
   recipient: Address;
 }
 
@@ -24,7 +24,7 @@ const parsers: FieldParser<Input> = {
   chainId: numberField,
   // Note that this is a float (i.e. token units)
   amount: floatField,
-  token: addressOrSymbolField,
+  tokenOrSymbol: addressOrSymbolField,
   recipient: addressField,
 };
 
@@ -33,7 +33,7 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const search = url.searchParams;
   console.log("erc20/", search);
   try {
-    const { chainId, amount, token, recipient } = validateInput<Input>(
+    const { chainId, amount, tokenOrSymbol: token, recipient } = validateInput<Input>(
       search,
       parsers,
     );
