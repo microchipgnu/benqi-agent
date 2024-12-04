@@ -33,10 +33,12 @@ export async function GET(req: NextRequest): Promise<NextResponse> {
   const search = url.searchParams;
   console.log("erc20/", search);
   try {
-    const { chainId, amount, tokenOrSymbol: token, recipient } = validateInput<Input>(
-      search,
-      parsers,
-    );
+    const {
+      chainId,
+      amount,
+      tokenOrSymbol: token,
+      recipient,
+    } = validateInput<Input>(search, parsers);
     const { decimals, address, symbol } = await getTokenDetails(
       chainId,
       token,
