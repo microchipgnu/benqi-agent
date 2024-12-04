@@ -1,4 +1,3 @@
-import { getTokenDetails, TokenInfo } from "./tokens";
 import { NextRequest } from "next/server";
 import {
   OrderQuoteRequest,
@@ -6,8 +5,13 @@ import {
   SigningScheme,
 } from "@cowprotocol/cow-sdk";
 import { getAddress, isAddress, parseUnits } from "viem";
-import { getSafeBalances, TokenBalance } from "../../safe-util";
 import { NATIVE_ASSET } from "./protocol";
+import {
+  getSafeBalances,
+  TokenBalance,
+  getTokenDetails,
+  TokenInfo,
+} from "@bitteprotocol/agent-sdk";
 
 export interface ParsedQuoteRequest {
   quoteRequest: OrderQuoteRequest;
@@ -16,6 +20,7 @@ export interface ParsedQuoteRequest {
 
 export async function parseQuoteRequest(
   req: NextRequest,
+  zerionKey?: string,
 ): Promise<ParsedQuoteRequest> {
   // TODO - Add Type Guard on Request (to determine better if it needs processing below.)
   const requestBody = await req.json();
@@ -33,7 +38,7 @@ export async function parseQuoteRequest(
   }
 
   const [balances, buyTokenData] = await Promise.all([
-    getSafeBalances(chainId, sender),
+    getSafeBalances(chainId, sender, zerionKey),
     getTokenDetails(chainId, buyToken),
   ]);
   const sellTokenData = sellTokenAvailable(balances, sellToken);
@@ -80,6 +85,7 @@ function sellTokenAvailable(
     return {
       address: getAddress(balance.tokenAddress || NATIVE_ASSET),
       decimals: balance.token?.decimals || 18,
+      symbol: balance.token?.symbol || "UNKONWN",
     };
   }
   throw new Error("Sell token not found in balances");

@@ -1,13 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
+import { Address } from "viem";
+import { validateRequest, getSafeSaltNonce, getZerionKey } from "../util";
 import {
   addressField,
   FieldParser,
+  getSafeBalances,
   numberField,
   validateInput,
-} from "../validate";
-import { getSafeBalances } from "../safe-util";
-import { Address } from "viem";
-import { validateRequest } from "../util";
+} from "@bitteprotocol/agent-sdk";
 
 interface Input {
   chainId: number;
@@ -20,14 +20,18 @@ const parsers: FieldParser<Input> = {
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
-  const headerError = await validateRequest(req);
+  const headerError = await validateRequest(req, getSafeSaltNonce());
   if (headerError) return headerError;
 
   const search = req.nextUrl.searchParams;
   console.log("Request: balances/", search);
   try {
     const { chainId, safeAddress } = validateInput<Input>(search, parsers);
-    const balances = await getSafeBalances(chainId, safeAddress);
+    const balances = await getSafeBalances(
+      chainId,
+      safeAddress,
+      getZerionKey(),
+    );
     console.log(`Retrieved ${balances.length} balances for ${safeAddress}`);
     return NextResponse.json(balances, { status: 200 });
   } catch (error: unknown) {
