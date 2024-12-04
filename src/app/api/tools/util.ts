@@ -26,7 +26,7 @@ function getEnvVar(key: string): string {
   return value;
 }
 export function getZerionKey(): string {
-  return getEnvVar("ZERION_API_KEY");
+  return getEnvVar("ZERION_KEY");
 }
 
 export function getSafeSaltNonce(): string {
