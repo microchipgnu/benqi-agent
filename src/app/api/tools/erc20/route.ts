@@ -9,6 +9,8 @@ import {
   type FieldParser,
   signRequestFor,
   getTokenDetails,
+  handleRequest,
+  TxData,
 } from "@bitte-ai/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { getTokenMap } from "../util";
@@ -29,43 +31,39 @@ const parsers: FieldParser<Input> = {
 };
 
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  return handleRequest(req, logic, (result) => NextResponse.json(result));
+}
+
+async function logic(req: NextRequest): Promise<TxData> {
   const url = new URL(req.url);
   const search = url.searchParams;
   console.log("erc20/", search);
-  try {
-    const {
-      chainId,
-      amount,
-      tokenOrSymbol: token,
-      recipient,
-    } = validateInput<Input>(search, parsers);
-    const { decimals, address, symbol } = await getTokenDetails(
-      chainId,
-      token,
-      await getTokenMap(),
-    );
-    console.log("erc20/ tokenDetails", chainId, symbol, decimals, address);
-    return NextResponse.json(
-      {
-        transaction: signRequestFor({
-          chainId,
-          metaTransactions: [
-            erc20Transfer({
-              token: address,
-              to: recipient,
-              amount: parseUnits(amount.toString(), decimals),
-            }),
-          ],
-        }),
-      },
-      { status: 200 },
-    );
-  } catch (error: unknown) {
-    const message =
-      error instanceof Error
-        ? error.message
-        : `Unknown error occurred ${String(error)}`;
-    console.error("erc20/ error", message);
-    return NextResponse.json({ ok: false, message }, { status: 400 });
+  const {
+    chainId,
+    amount,
+    tokenOrSymbol: token,
+    recipient,
+  } = validateInput<Input>(search, parsers);
+  const tokenDetails = await getTokenDetails(
+    chainId,
+    token,
+    await getTokenMap(),
+  );
+  if (!tokenDetails) {
+    throw new Error(`Token not found on chain ${chainId}: ${token}`);
   }
+  const { symbol, decimals, address } = tokenDetails;
+  console.log("erc20/ tokenDetails", chainId, symbol, decimals, address);
+  return {
+    transaction: signRequestFor({
+      chainId,
+      metaTransactions: [
+        erc20Transfer({
+          token: address,
+          to: recipient,
+          amount: parseUnits(amount.toString(), decimals),
+        }),
+      ],
+    }),
+  };
 }
