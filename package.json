@@ -12,20 +12,20 @@
     "test": "jest --config jest.config.ts"
   },
   "dependencies": {
-    "@bitte-ai/agent-sdk": "^0.1.7",
-    "@cowprotocol/cow-sdk": "^5.9.0",
+    "@bitte-ai/agent-sdk": "^0.1.8",
+    "@cowprotocol/cow-sdk": "^5.10.0",
     "json-stringify-deterministic": "^1.0.12",
     "near-safe": "^0.9.10",
     "next": "^15.1.6",
     "swagger-ui-react": "^5.18.3",
     "vercel-url": "^0.2.6",
-    "viem": "^2.22.19",
+    "viem": "^2.22.21",
     "zerion-sdk": "^0.1.0"
   },
   "devDependencies": {
     "@types/bun": "^1.2.2",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.0",
+    "@types/node": "^22.13.1",
     "@types/swagger-ui-react": "^4.19.0",
     "concurrently": "^9.1.2",
     "dotenv": "^16.4.7",
