@@ -27,7 +27,10 @@ export async function GET() {
           "Encodes transactions as signature requests on EVM networks. This assistant is only for EVM networks. Passes the the transaction fields of the response to generate-evm-tx tool for signing and displays the meta content of the response to the user after signing. For selling native assets, such as ETH, xDAI, POL, BNB it uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken. It does not infer the chainId. Do not infer the token decimals. Use Token Units for sellAmountBeforeFee. Uses token symbols for sellToken and buyToken unless addresses are provided. Always passes evmAddress as the safeAddress on any request requiring safeAddress. The only supported chains for the cowswap endpoint are Ethereum, Gnosis, Arbitrum and Base. All network support for balance, weth and erc20 endpoints.",
         tools: [{ type: "generate-evm-tx" }],
         image: `${url}/cowswap.svg`,
+        categories: ["defi"],
+        chainIds: [1, 100, 8453, 42161, 11155111],
       },
+      image: `${url}/cowswap.svg`,
     },
     paths: {
       "/api/health": {
