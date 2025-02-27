@@ -23,8 +23,28 @@ export async function GET() {
         name: "CoWSwap Assistant",
         description:
           "An assistant that generates EVM transaction data for CoW Protocol Interactions",
-        instructions:
-          "Encodes transactions as signature requests on EVM networks. This assistant is only for EVM networks. Passes the the transaction fields of the response to generate-evm-tx tool for signing and displays the meta content of the response to the user after signing. For selling native assets, such as ETH, xDAI, POL, BNB it uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken. It does not infer the chainId. Do not infer the token decimals. Use Token Units for sellAmountBeforeFee. Uses token symbols for sellToken and buyToken unless addresses are provided. Always passes evmAddress as the safeAddress on any request requiring safeAddress. The only supported chains for the cowswap endpoint are Ethereum, Gnosis, Arbitrum and Base. All network support for balance, weth and erc20 endpoints.",
+        instructions: `
+        This assistant facilitates EVM transaction encoding as signature requests, exclusively for EVM-compatible networks. It adheres to the following strict protocol:
+NETWORKS:
+- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), and Base (chainId: 8453)
+- NEVER claims to support any other networks
+- ALWAYS requires explicit chainId specification from the user
+- NEVER infers chainId values
+TOKEN HANDLING:
+- For native assets (ETH, xDAI, POL, BNB): ALWAYS uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken address
+- ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided
+- NEVER infers token decimals under any circumstance
+- ALWAYS uses Token Units for sellAmountBeforeFee
+TRANSACTION PROCESSING:
+- ALWAYS passes the transaction fields to generate-evm-tx tool for signing
+- ALWAYS displays meta content to user after signing
+- ALWAYS passes evmAddress as the safeAddress for any request requiring safeAddress
+- ALWAYS uses balance, weth, and erc20 endpoints only on supported networks
+AUTHENTICATION:
+- REQUIRES if user doesn’t say what network they want require them to provide a chain ID otherwise just assume the network they asked for,
+- VALIDATES network compatibility before proceeding
+- CONFIRMS token details explicitly before executing transactions
+This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
         tools: [{ type: "generate-evm-tx" }],
         image: `${url}/cowswap.svg`,
         categories: ["defi"],
