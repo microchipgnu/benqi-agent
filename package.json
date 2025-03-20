@@ -16,25 +16,25 @@
     "@cowprotocol/cow-sdk": "^5.10.1",
     "json-stringify-deterministic": "^1.0.12",
     "near-safe": "^0.9.11",
-    "next": "^15.1.7",
+    "next": "^15.2.3",
     "redoc": "^2.4.0",
     "vercel-url": "^0.2.6",
-    "viem": "^2.23.4",
-    "zerion-sdk": "^0.1.0"
+    "viem": "^2.23.13",
+    "zerion-sdk": "^0.1.1"
   },
   "devDependencies": {
-    "@types/bun": "^1.2.2",
+    "@types/bun": "^1.2.5",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.4",
-    "@types/react": "^19.0.10",
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.12",
     "concurrently": "^9.1.2",
     "dotenv": "^16.4.7",
-    "eslint-config-next": "^15.1.7",
+    "eslint-config-next": "^15.2.3",
     "jest": "^29.7.0",
-    "make-agent": "0.2.9",
-    "prettier": "^3.5.1",
-    "ts-jest": "^29.2.5",
+    "make-agent": "0.2.11",
+    "prettier": "^3.5.3",
+    "ts-jest": "^29.2.6",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   }
 }
