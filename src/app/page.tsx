@@ -8,10 +8,12 @@ export default function Home() {
       options={{
         theme: {
           colors: {
-            primary: { main: "#ffffff" },
+            primary: { main: "#0EA47A" },
             text: { primary: "#000000" },
           },
         },
+        scrollYOffset: 60,
+        hideDownloadButton: true,
       }}
     />
   );

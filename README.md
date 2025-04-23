@@ -1,24 +1,24 @@
-# CoWSwap AI Agent
+# BENQI AI Agent
 
-This is a [Next.js](https://nextjs.org) project that implements an AI-powered agent for interacting with CoW Protocol (Coincidence of Wants). The agent helps users generate and execute transactions on CoW Protocol across supported EVM networks.
+This is a [Next.js](https://nextjs.org) project that implements an AI-powered agent for interacting with BENQI protocols on Avalanche. The agent helps users generate and execute transactions for BENQI liquid staking, markets, and other services.
 
 ## Features
 
-- Generate transaction data for CoW Protocol interactions
-- Support for selling native assets (ETH, xDAI, POL, BNB)
+- BENQI Liquid Staking: Stake AVAX for sAVAX
+- BENQI Markets: Deposit and borrow assets
+- Health Monitoring: Check account health and liquidation risk
 - ERC20 token transfers
-- WETH wrapping and unwrapping
-- Price quotes and fee estimation for trades
-- Support for multiple EVM networks
+- Support for Avalanche and Avalanche Fuji Testnet
 
 ## API Endpoints
 
 The agent exposes several endpoints:
 
-- `/api/tools/cowswap`: Quote prices and generate swap transactions
+- `/api/tools/benqi/liquid-staking`: Stake AVAX for sAVAX and unstake sAVAX to AVAX
+- `/api/tools/benqi/markets`: Deposit to and borrow from BENQI markets
+- `/api/tools/benqi/health`: Check account health and liquidation risk
 - `/api/tools/erc20`: Generate ERC20 transfer transactions
-- `/api/tools/weth/wrap`: Generate WETH wrapping transactions
-- `/api/tools/weth/unwrap`: Generate WETH unwrapping transactions
+- `/api/tools/balances`: Get token balances for a wallet
 
 ## Local Development
 
@@ -42,12 +42,14 @@ Open [http://localhost:3000](http://localhost:3000) with your browser to see the
 The application requires the following environment variables:
 
 - `BITTE_KEY`: JSON containing the account ID
+- `TOKEN_MAP_URL`: URL for loading token mappings
+- `ZERION_KEY`: API key for Zerion for fetching balances
 
 ## Learn More
 
 To learn more about the technologies used in this project:
 
-- [CoW Protocol Documentation](https://docs.cow.fi/) - Learn about CoW Protocol
+- [BENQI Documentation](https://docs.benqi.fi/) - Learn about BENQI protocols
 - [Bitte Documentation](https://docs.bitte.ai/) - Learn about Bitte and building AI agents
 - [Next.js Documentation](https://nextjs.org/docs) - Learn about Next.js features and API
 

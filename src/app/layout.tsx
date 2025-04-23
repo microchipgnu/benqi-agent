@@ -1,3 +1,8 @@
+export const metadata = {
+  title: 'BENQI Protocol Agent',
+  description: 'BENQI Protocol Agent for Avalanche',
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -5,6 +10,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en">
+      <head>
+        <link rel="icon" href="/benqi.svg" />
+      </head>
       <body>{children}</body>
     </html>
   );
