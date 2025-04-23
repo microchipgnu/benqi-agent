@@ -5,7 +5,7 @@ if (!key?.accountId) {
   console.error("no account");
 }
 
-const url = process.env.VERCEL_URL || "https://benqi-agent.vercel.app";
+const url = process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : "https://benqi-agent.vercel.app";
 
 // Handle CORS preflight requests
 export async function OPTIONS(request: NextRequest) {
