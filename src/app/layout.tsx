@@ -1,6 +1,9 @@
 export const metadata = {
   title: 'BENQI Protocol Agent',
-  description: 'BENQI Protocol Agent for Avalanche',
+  description: 'AI agent for BENQI DeFi protocols on Avalanche',
+  icons: {
+    icon: '/benqi.svg',
+  },
 };
 
 export default function RootLayout({

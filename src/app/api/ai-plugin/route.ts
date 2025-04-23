@@ -6,7 +6,7 @@ if (!key?.accountId) {
   console.error("no account");
 }
 
-const url = bitteConfig.url || "https://near-cow-agent.vercel.app";
+const url = bitteConfig.url || "https://benqi-agent.vercel.app";
 
 export async function GET() {
   const pluginData = {
