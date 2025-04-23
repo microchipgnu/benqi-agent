@@ -65,11 +65,11 @@ AUTHENTICATION:
 - CONFIRMS token details explicitly before executing transactions
 This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
         tools: [{ type: "generate-evm-tx" }],
-        image: `${url}/benqi-logo.png`,
+        image: `${url}/benqi-logo.jpg`,
         categories: ["defi"],
         chainIds: [43114, 43113],
       },
-      image: `${url}/benqi-logo.png`,
+      image: `${url}/benqi-logo.jpg`,
     },
     paths: {
       "/api/health": {
