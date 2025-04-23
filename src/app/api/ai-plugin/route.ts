@@ -12,26 +12,26 @@ export async function GET() {
   const pluginData = {
     openapi: "3.0.0",
     info: {
-      title: "Bitte CoWSwap Agent",
-      description: "API for interactions with CoW Protocol",
+      title: "Bitte CoWSwap and BENQI Agent",
+      description: "API for interactions with CoW Protocol and BENQI protocols on Avalanche",
       version: "1.0.0",
     },
     servers: [{ url }],
     "x-mb": {
       "account-id": key.accountId,
       assistant: {
-        name: "CoWSwap Assistant",
+        name: "CoWSwap and BENQI Assistant",
         description:
-          "An assistant that generates EVM transaction data for CoW Protocol Interactions",
+          "An assistant that generates EVM transaction data for CoW Protocol and BENQI protocol interactions",
         instructions: `
         This assistant facilitates EVM transaction encoding as signature requests, exclusively for EVM-compatible networks. It adheres to the following strict protocol:
 NETWORKS:
-- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), and Base (chainId: 8453)
+- ONLY supports Ethereum (chainId: 1), Gnosis (chainId: 100), Arbitrum (chainId: 42161), Base (chainId: 8453), Avalanche (chainId: 43114), and Avalanche Fuji Testnet (chainId: 43113)
 - NEVER claims to support any other networks
 - ALWAYS requires explicit chainId specification from the user
 - NEVER infers chainId values
 TOKEN HANDLING:
-- For native assets (ETH, xDAI, POL, BNB): ALWAYS uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken address
+- For native assets (ETH, xDAI, POL, BNB, AVAX): ALWAYS uses 0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE as the sellToken address
 - ALWAYS passes token symbols for sellToken and buyToken unless specific addresses are provided
 - NEVER infers token decimals under any circumstance
 - ALWAYS uses Token Units for sellAmountBeforeFee
@@ -39,16 +39,21 @@ TRANSACTION PROCESSING:
 - ALWAYS passes the transaction fields to generate-evm-tx tool for signing
 - ALWAYS displays meta content to user after signing
 - ALWAYS passes evmAddress as the safeAddress for any request requiring safeAddress
-- ALWAYS uses balance, weth, and erc20 endpoints only on supported networks
+- ALWAYS uses balance, weth, erc20, and benqi endpoints only on supported networks
+BENQI OPERATIONS:
+- ONLY uses BENQI operations on Avalanche (43114) and Avalanche Fuji Testnet (43113)
+- For liquid staking, ALWAYS informs users that unstaking has a 15-day unlock period
+- For markets operations, ALWAYS validates that users can only borrow USDC from Ecosystem Markets
+- ALWAYS checks health factors for users before recommending borrowing operations
 AUTHENTICATION:
-- REQUIRES if user doesn’t say what network they want require them to provide a chain ID otherwise just assume the network they asked for,
+- REQUIRES if user doesn't say what network they want require them to provide a chain ID otherwise just assume the network they asked for,
 - VALIDATES network compatibility before proceeding
 - CONFIRMS token details explicitly before executing transactions
 This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
         tools: [{ type: "generate-evm-tx" }],
         image: `${url}/cowswap.svg`,
         categories: ["defi"],
-        chainIds: [1, 100, 8453, 42161, 11155111],
+        chainIds: [1, 100, 8453, 42161, 11155111, 43114, 43113],
       },
       image: `${url}/cowswap.svg`,
     },
@@ -235,6 +240,231 @@ This assistant follows these specifications with zero deviation to ensure secure
           ],
           responses: {
             "200": { $ref: "#/components/responses/SignRequest200" },
+            "400": { $ref: "#/components/responses/BadRequest400" },
+          },
+        },
+      },
+      "/api/tools/benqi/liquid-staking": {
+        get: {
+          tags: ["benqi"],
+          summary: "Stake AVAX for sAVAX",
+          description: "Stake AVAX tokens to receive sAVAX through BENQI Liquid Staking",
+          operationId: "stake-avax",
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            {
+              in: "query",
+              name: "amount",
+              required: true,
+              schema: {
+                type: "number",
+              },
+              description: "Amount of AVAX to stake in AVAX units (e.g., 1.5 AVAX)",
+            },
+          ],
+          responses: {
+            "200": { $ref: "#/components/responses/SignRequestResponse200" },
+            "400": { $ref: "#/components/responses/BadRequest400" },
+          },
+        },
+        post: {
+          tags: ["benqi"],
+          summary: "Unstake sAVAX for AVAX",
+          description: "Unstake sAVAX tokens to receive AVAX through BENQI Liquid Staking. Note: Unstaking has a 15-day unlock period.",
+          operationId: "unstake-savax",
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            {
+              in: "query",
+              name: "amount",
+              required: true,
+              schema: {
+                type: "number",
+              },
+              description: "Amount of sAVAX to unstake in sAVAX units (e.g., 1.5 sAVAX)",
+            },
+          ],
+          responses: {
+            "200": { $ref: "#/components/responses/SignRequestResponse200" },
+            "400": { $ref: "#/components/responses/BadRequest400" },
+          },
+        },
+      },
+      "/api/tools/benqi/markets": {
+        get: {
+          tags: ["benqi"],
+          summary: "Deposit assets to BENQI Markets",
+          description: "Supply assets to BENQI Markets as deposits or collateral",
+          operationId: "deposit-to-markets",
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/amount" },
+            { $ref: "#/components/parameters/tokenOrSymbol" },
+            {
+              in: "query",
+              name: "marketType",
+              required: true,
+              schema: {
+                type: "string",
+                enum: ["core", "ecosystem"],
+              },
+              description: "Type of market: 'core' for highly liquid assets or 'ecosystem' for isolated markets",
+            },
+          ],
+          responses: {
+            "200": { $ref: "#/components/responses/SignRequestResponse200" },
+            "400": { $ref: "#/components/responses/BadRequest400" },
+          },
+        },
+        post: {
+          tags: ["benqi"],
+          summary: "Borrow assets from BENQI Markets",
+          description: "Borrow assets from BENQI Markets using deposited collateral. Note: Only USDC can be borrowed from Ecosystem Markets.",
+          operationId: "borrow-from-markets",
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            { $ref: "#/components/parameters/amount" },
+            { $ref: "#/components/parameters/tokenOrSymbol" },
+            {
+              in: "query",
+              name: "marketType",
+              required: true,
+              schema: {
+                type: "string",
+                enum: ["core", "ecosystem"],
+              },
+              description: "Type of market: 'core' for highly liquid assets or 'ecosystem' for isolated markets (ecosystem only allows USDC borrowing)",
+            },
+          ],
+          responses: {
+            "200": { $ref: "#/components/responses/SignRequestResponse200" },
+            "400": { $ref: "#/components/responses/BadRequest400" },
+          },
+        },
+      },
+      "/api/tools/benqi/health": {
+        get: {
+          tags: ["benqi"],
+          summary: "Check account health in BENQI Markets",
+          description: "Get the health factor and liquidation risk status for an account in BENQI Markets",
+          operationId: "check-account-health",
+          parameters: [
+            { $ref: "#/components/parameters/chainId" },
+            {
+              in: "query",
+              name: "accountAddress",
+              required: true,
+              schema: {
+                $ref: "#/components/schemas/Address",
+              },
+              description: "Address of the account to check health for",
+            },
+            {
+              in: "query",
+              name: "marketType",
+              required: true,
+              schema: {
+                type: "string",
+                enum: ["core", "ecosystem"],
+              },
+              description: "Type of market to check: 'core' or 'ecosystem'",
+            },
+          ],
+          responses: {
+            "200": {
+              description: "Account health information",
+              content: {
+                "application/json": {
+                  schema: {
+                    type: "object",
+                    properties: {
+                      healthFactor: {
+                        type: "number",
+                        description: "Health factor of the account (below 1 is liquidatable)",
+                      },
+                      totalCollateralValue: {
+                        type: "string",
+                        description: "Total value of collateral in USD",
+                      },
+                      totalBorrowValue: {
+                        type: "string",
+                        description: "Total value of borrowed assets in USD",
+                      },
+                      liquidationThreshold: {
+                        type: "number",
+                        description: "Threshold at which liquidation occurs",
+                      },
+                      status: {
+                        type: "string",
+                        enum: ["safe", "warning", "danger", "liquidatable"],
+                        description: "Current status of the account's health",
+                      },
+                      positions: {
+                        type: "object",
+                        properties: {
+                          supplied: {
+                            type: "array",
+                            items: {
+                              type: "object",
+                              properties: {
+                                token: {
+                                  type: "string",
+                                  description: "Token address",
+                                },
+                                symbol: {
+                                  type: "string",
+                                  description: "Token symbol",
+                                },
+                                amount: {
+                                  type: "string",
+                                  description: "Amount supplied",
+                                },
+                                value: {
+                                  type: "string",
+                                  description: "USD value of supplied amount",
+                                },
+                                collateralFactor: {
+                                  type: "number",
+                                  description: "Collateral factor for this asset",
+                                },
+                                isCollateral: {
+                                  type: "boolean",
+                                  description: "Whether this asset is being used as collateral",
+                                },
+                              },
+                            },
+                          },
+                          borrowed: {
+                            type: "array",
+                            items: {
+                              type: "object",
+                              properties: {
+                                token: {
+                                  type: "string",
+                                  description: "Token address",
+                                },
+                                symbol: {
+                                  type: "string",
+                                  description: "Token symbol",
+                                },
+                                amount: {
+                                  type: "string",
+                                  description: "Amount borrowed",
+                                },
+                                value: {
+                                  type: "string",
+                                  description: "USD value of borrowed amount",
+                                },
+                              },
+                            },
+                          },
+                        },
+                      },
+                    },
+                  },
+                },
+              },
+            },
             "400": { $ref: "#/components/responses/BadRequest400" },
           },
         },
