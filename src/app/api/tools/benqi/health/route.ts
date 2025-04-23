@@ -52,8 +52,25 @@ const healthCheckParsers: FieldParser<HealthCheckInput> = {
   },
 };
 
+// Handle CORS preflight requests
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin') || '*';
+  
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, mb-metadata',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
+}
+
 // GET endpoint for health check
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  console.log("benqi/health GET request", req.url);
   return handleRequest(req, healthCheckLogic, (result) => NextResponse.json(result));
 }
 

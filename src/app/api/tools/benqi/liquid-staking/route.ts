@@ -31,20 +31,38 @@ const unstakeFieldParsers: FieldParser<UnstakeInput> = {
   amount: floatField,
 };
 
+// Handle CORS preflight requests
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin') || '*';
+  
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, mb-metadata',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
+}
+
 // Handler for staking AVAX to get sAVAX
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  console.log("benqi/liquid-staking GET request", req.url);
   return handleRequest(req, stakeLogic, (result) => NextResponse.json(result));
 }
 
 // Handler for unstaking sAVAX to get AVAX
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  console.log("benqi/liquid-staking POST request", req.url);
   return handleRequest(req, unstakeLogic, (result) => NextResponse.json(result));
 }
 
 async function stakeLogic(req: NextRequest): Promise<TxData> {
   const url = new URL(req.url);
   const search = url.searchParams;
-  console.log("benqi/liquid-staking/stake", search);
+  console.log("benqi/liquid-staking/stake params:", Object.fromEntries(search.entries()));
   
   const { chainId, amount } = validateInput<StakeInput>(search, stakeFieldParsers);
   
@@ -80,7 +98,7 @@ async function stakeLogic(req: NextRequest): Promise<TxData> {
 async function unstakeLogic(req: NextRequest): Promise<TxData> {
   const url = new URL(req.url);
   const search = url.searchParams;
-  console.log("benqi/liquid-staking/unstake", search);
+  console.log("benqi/liquid-staking/unstake params:", Object.fromEntries(search.entries()));
   
   const { chainId, amount } = validateInput<UnstakeInput>(search, unstakeFieldParsers);
   

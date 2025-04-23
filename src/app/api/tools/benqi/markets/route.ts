@@ -60,13 +60,31 @@ const borrowFieldParsers: FieldParser<BorrowInput> = {
   },
 };
 
+// Handle CORS preflight requests
+export async function OPTIONS(request: NextRequest) {
+  const origin = request.headers.get('origin') || '*';
+  
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization, mb-metadata',
+      'Access-Control-Allow-Credentials': 'true',
+      'Access-Control-Max-Age': '86400',
+    },
+  });
+}
+
 // GET endpoint for deposit (supply) operation
 export async function GET(req: NextRequest): Promise<NextResponse> {
+  console.log("benqi/markets GET request", req.url);
   return handleRequest(req, depositLogic, (result) => NextResponse.json(result));
 }
 
 // POST endpoint for borrow operation
 export async function POST(req: NextRequest): Promise<NextResponse> {
+  console.log("benqi/markets POST request", req.url);
   return handleRequest(req, borrowLogic, (result) => NextResponse.json(result));
 }
 
