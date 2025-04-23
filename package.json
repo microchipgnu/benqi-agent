@@ -5,8 +5,9 @@
   "scripts": {
     "dev": "concurrently \"next dev --turbopack\" \"make-agent dev\"",
     "dev-testnet": "concurrently \"next dev --turbopack\" \"make-agent dev -p 3000 -t\"",
-    "build": "next build",
-    "build:deploy": "next build && make-agent deploy -u https://benqi-agent.vercel.app",
+    "build": "next build && make-agent deploy -u ${VERCEL_URL:-https://benqi-agent.vercel.app}",
+    "build:deploy": "next build && make-agent deploy -u ${VERCEL_URL:-https://benqi-agent.vercel.app}",
+    "bitte:deploy": "make-agent deploy -u ${VERCEL_URL:-https://benqi-agent.vercel.app}",
     "start": "next start",
     "lint": "next lint && prettier --check '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",
     "fmt": "next lint --fix && prettier --write '{src/app,tests}/**/*.{js,jsx,ts,tsx}'",

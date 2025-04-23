@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 
 const key = JSON.parse(process.env.BITTE_KEY || "{}");
-const bitteConfig = JSON.parse(process.env.BITTE_CONFIG || "{}");
 if (!key?.accountId) {
   console.error("no account");
 }
 
-const url = bitteConfig.url || "https://benqi-agent.vercel.app";
+const url = process.env.VERCEL_URL || "https://benqi-agent.vercel.app";
 
 // Handle CORS preflight requests
 export async function OPTIONS(request: NextRequest) {
