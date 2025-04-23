@@ -7,7 +7,6 @@ import {
   handleRequest,
 } from "@bitte-ai/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { getBenqiContract, MarketType } from "../util";
 
 // Interface for health check input
 interface HealthCheckInput {
@@ -64,7 +63,7 @@ async function healthCheckLogic(req: NextRequest): Promise<HealthCheckResponse> 
   const search = url.searchParams;
   console.log("benqi/health/check", search);
   
-  const { chainId, accountAddress, marketType } = validateInput<HealthCheckInput>(search, healthCheckParsers);
+  const { chainId } = validateInput<HealthCheckInput>(search, healthCheckParsers);
   
   // Ensure chainId is supported
   if (chainId !== 43114 && chainId !== 43113) {

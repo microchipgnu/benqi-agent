@@ -1,8 +1,4 @@
-import { Address, parseUnits } from "viem";
-import {
-  signRequestFor,
-  type TxData,
-} from "@bitte-ai/agent-sdk";
+import { Address } from "viem";
 
 // Type for our contracts mapping
 type ChainContracts = {
