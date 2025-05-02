@@ -35,7 +35,7 @@ export async function GET() {
     "x-mb": {
       "account-id": key.accountId,
       assistant: {
-        name: "Benqi Agent (presentation)",
+        name: "Benqi Agent",
         description:
           "An assistant that generates EVM transaction data for BENQI protocol interactions",
         instructions: `
