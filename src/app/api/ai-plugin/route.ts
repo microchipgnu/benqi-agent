@@ -33,7 +33,7 @@ export async function GET() {
     },
     servers: [{ url }],
     "x-mb": {
-      "account-id": key.accountId,
+      "account-id": "microchipgnu.eth",
       assistant: {
         name: "Benqi Agent",
         description:
