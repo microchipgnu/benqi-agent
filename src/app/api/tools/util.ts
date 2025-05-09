@@ -32,18 +32,24 @@ export function getSafeSaltNonce(): string {
   return process.env.SAFE_SALT_NONCE || bitteProtocolSaltNonce;
 }
 
-export async function getTokenMap(): Promise<BlockchainMapping> {
-  const getCachedTokenMap = unstable_cache(
-    async () => {
-      console.log("Loading TokenMap...");
-      return loadTokenMap(getEnvVar("TOKEN_MAP_URL"));
-    },
-    ["token-map"], // cache key
-    {
-      revalidate: 86400, // revalidate 24 hours
-      tags: ["token-map"],
-    },
-  );
+// Global variable to store the token map in memory
+let tokenMapCache: BlockchainMapping | null = null;
+let tokenMapLastFetch = 0;
+const TOKEN_MAP_CACHE_TTL = 3600000; // 1 hour in milliseconds
 
-  return getCachedTokenMap();
+export async function getTokenMap(): Promise<BlockchainMapping> {
+  // Use in-memory caching instead of Next.js cache
+  const now = Date.now();
+  
+  // If we have a cached token map that's still fresh, return it
+  if (tokenMapCache && (now - tokenMapLastFetch < TOKEN_MAP_CACHE_TTL)) {
+    return tokenMapCache;
+  }
+  
+  // Otherwise, fetch a new token map
+  console.log("Loading TokenMap...");
+  tokenMapCache = await loadTokenMap(getEnvVar("TOKEN_MAP_URL"));
+  tokenMapLastFetch = now;
+  
+  return tokenMapCache;
 }

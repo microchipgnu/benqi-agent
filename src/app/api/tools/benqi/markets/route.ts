@@ -102,11 +102,18 @@ async function depositLogic(req: NextRequest): Promise<TxData> {
   }
   
   // Get token details
-  const tokenDetails = await getTokenDetails(
-    chainId,
-    tokenOrSymbol,
-    await getTokenMap(),
-  );
+  let tokenDetails;
+  try {
+    const tokenMap = await getTokenMap();
+    tokenDetails = await getTokenDetails(
+      chainId,
+      tokenOrSymbol,
+      tokenMap,
+    );
+  } catch (error) {
+    console.error("Error fetching token details:", error);
+    throw new Error(`Failed to fetch token details for ${tokenOrSymbol} on chain ${chainId}`);
+  }
   
   if (!tokenDetails) {
     throw new Error(`Token not found on chain ${chainId}: ${tokenOrSymbol}`);
@@ -156,11 +163,18 @@ async function borrowLogic(req: NextRequest): Promise<TxData> {
   }
   
   // Get token details
-  const tokenDetails = await getTokenDetails(
-    chainId,
-    tokenOrSymbol,
-    await getTokenMap(),
-  );
+  let tokenDetails;
+  try {
+    const tokenMap = await getTokenMap();
+    tokenDetails = await getTokenDetails(
+      chainId,
+      tokenOrSymbol,
+      tokenMap,
+    );
+  } catch (error) {
+    console.error("Error fetching token details:", error);
+    throw new Error(`Failed to fetch token details for ${tokenOrSymbol} on chain ${chainId}`);
+  }
   
   if (!tokenDetails) {
     throw new Error(`Token not found on chain ${chainId}: ${tokenOrSymbol}`);

@@ -1,4 +1,4 @@
-import { Address } from "viem";
+import { Address, getAddress } from "viem";
 
 // Type for our contracts mapping
 type ChainContracts = {
@@ -16,15 +16,15 @@ const BENQI_CONTRACTS: ChainContracts = {
   43114: {
     liquidStaking: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE" as Address,
     savaxToken: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE" as Address, // Same as liquid staking contract
-    marketsCore: "0x4F01AeD16D97E3aB5ab2B501154DC9bb0F1A5A2C" as Address, // Example - replace with actual address
-    marketsEcosystem: "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5" as Address, // Example - replace with actual address
+    marketsCore: "0x486Af39519B4Dc9a7fCcd318217352830E8AD9b4" as Address, // BENQI Core Markets Unitroller
+    marketsEcosystem: "0x3344e55C6DDE2A01F4ED893f97bAc1c99F5f217B" as Address, // BENQI Ecosystem Markets Unitroller
   },
   // Fuji testnet
   43113: {
-    liquidStaking: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE" as Address, // Using mainnet for example, should be updated
-    savaxToken: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE" as Address,
-    marketsCore: "0x4F01AeD16D97E3aB5ab2B501154DC9bb0F1A5A2C" as Address, 
-    marketsEcosystem: "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5" as Address,
+    liquidStaking: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE" as Address, // Update with actual testnet address
+    savaxToken: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE" as Address, // Update with actual testnet address
+    marketsCore: "0x64478Bf5B8e2EE74a3430A4D6846Cdd0F2A4d1DD" as Address, // Testnet Core Markets address
+    marketsEcosystem: "0x08Cb31026155BC7E44210Fc05CF13DE6eF03FCb6" as Address, // Testnet Ecosystem Markets address
   },
 };
 
@@ -88,17 +88,17 @@ export function depositToMarketsTransaction(
     ? BENQI_CONTRACTS[chainId].marketsCore 
     : BENQI_CONTRACTS[chainId].marketsEcosystem;
   
-  // Mock function signature for deposit (supply)
-  // In a real implementation, this would be the actual ERC20 approve + deposit function calls
-  const depositFunc = "0x6e553f65"; // Placeholder function selector
+  // For Compound-style lending, we need to call the qiToken contract for the specific asset
+  // Function selector for "mint(address,uint256)" in BENQI
+  const mintFunctionSelector = "0x4b8a3529";
   
   // Encode parameters: token address (32 bytes) + amount (32 bytes)
-  const encodedToken = tokenAddress.slice(2).padStart(64, "0");
+  const encodedToken = tokenAddress.slice(2).toLowerCase().padStart(64, "0");
   const encodedAmount = amount.toString(16).padStart(64, "0");
   
   return {
     to: marketContract,
-    data: `${depositFunc}${encodedToken}${encodedAmount}`,
+    data: `${mintFunctionSelector}${encodedToken}${encodedAmount}`,
     value: "0x0",
   };
 }
@@ -115,16 +115,17 @@ export function borrowFromMarketsTransaction(
     ? BENQI_CONTRACTS[chainId].marketsCore 
     : BENQI_CONTRACTS[chainId].marketsEcosystem;
   
-  // Mock function signature for borrow
-  const borrowFunc = "0xc5ebeaec"; // Placeholder function selector
+  // For Compound-style lending, we need to call the specific function for borrowing the asset
+  // Function selector for "borrow(address,uint256)" in BENQI
+  const borrowFunctionSelector = "0xda3d454c";
   
   // Encode parameters: token address (32 bytes) + amount (32 bytes)
-  const encodedToken = tokenAddress.slice(2).padStart(64, "0");
+  const encodedToken = tokenAddress.slice(2).toLowerCase().padStart(64, "0");
   const encodedAmount = amount.toString(16).padStart(64, "0");
   
   return {
     to: marketContract,
-    data: `${borrowFunc}${encodedToken}${encodedAmount}`,
+    data: `${borrowFunctionSelector}${encodedToken}${encodedAmount}`,
     value: "0x0",
   };
 }
@@ -135,5 +136,6 @@ export function getBenqiContract(chainId: number, contractType: keyof typeof BEN
     throw new Error(`Chain ID ${chainId} not supported for BENQI operations`);
   }
   
-  return BENQI_CONTRACTS[chainId][contractType];
+  const address = BENQI_CONTRACTS[chainId][contractType];
+  return address; // Return the address directly, as we will checksum it in the health route
 } 
