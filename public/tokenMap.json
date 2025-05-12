@@ -68769,6 +68769,85 @@
     }
   },
   "43114": {
-    
+    "wavax": {
+      "address": "0xB31f66AA3C1e785363F0875A1B74E27b85FD66C7",
+      "symbol": "WAVAX",
+      "decimals": 18
+    },
+    "weth": {
+      "address": "0x49d5c2BdFFac6CE2BFDB6640F4F80f226bc10bAB",
+      "symbol": "WETH",
+      "decimals": 18
+    },
+    "usdc": {
+      "address": "0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E",
+      "symbol": "USDC",
+      "decimals": 6
+    },
+    "usdt": {
+      "address": "0xc7198437980c041c805A1EDcbA50c1Ce5db95118",
+      "symbol": "USDT",
+      "decimals": 6
+    },
+    "dai": {
+      "address": "0xd586E7F844cEa2F87f50152665bcbc2c279d8d70",
+      "symbol": "DAI",
+      "decimals": 18
+    },
+    "qiavax": {
+      "address": "0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c",
+      "symbol": "qiAVAX",
+      "decimals": 18
+    },
+    "qi": {
+      "address": "0x8729438EB15e2C8B576fCc6AeCdA6A148776C0F5",
+      "symbol": "QI",
+      "decimals": 18
+    },
+    "savx": {
+      "address": "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE",
+      "symbol": "sAVAX",
+      "decimals": 18
+    },
+    "png": {
+      "address": "0x60781C2586D68229fde47564546784ab3fACA982",
+      "symbol": "PNG",
+      "decimals": 18
+    },
+    "joe": {
+      "address": "0x6e84a6216Ea6dACC71eE8E6b0a5B7322EEbC0fDd",
+      "symbol": "JOE",
+      "decimals": 18
+    },
+    "ptp": {
+      "address": "0x22d4002028f537599be9f666d1c4fa138522f9c8",
+      "symbol": "PTP",
+      "decimals": 18
+    },
+    "gmx": {
+      "address": "0x62EDc0692BD897D2295872a9FFCac5425011c661",
+      "symbol": "GMX",
+      "decimals": 18
+    },
+    "yak": {
+      "address": "0x59414b3089ce2AF0010e7523Dea7E2b35d776ec7",
+      "symbol": "YAK",
+      "decimals": 18
+    },
+    "spell": {
+      "address": "0xCE1bFFBD5374Dac86a2893119683F4911a2F7814",
+      "symbol": "SPELL",
+      "decimals": 18
+    },
+    "mim": {
+      "address": "0x130966628846bfd36ff31a822705796e8cb8c18d",
+      "symbol": "MIM",
+      "decimals": 18
+    },
+    "wbtc": {
+      "address": "0x50B7545627a5162F82A992c33b87aDc75187B218",
+      "symbol": "WBTC",
+      "decimals": 8
+    }
   }
 }

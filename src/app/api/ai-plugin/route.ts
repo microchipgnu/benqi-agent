@@ -173,11 +173,20 @@ This assistant follows these specifications with zero deviation to ensure secure
       "/api/tools/benqi/liquid-staking": {
         get: {
           tags: ["benqi"],
-          summary: "Stake AVAX for sAVAX",
-          description: "Stake AVAX tokens to receive sAVAX through BENQI Liquid Staking",
-          operationId: "stake-avax",
+          summary: "Stake AVAX for sAVAX or unstake sAVAX for AVAX",
+          description: "Stake AVAX tokens to receive sAVAX or unstake sAVAX to receive AVAX through BENQI Liquid Staking. Note: Unstaking has a 15-day unlock period.",
+          operationId: "liquid-staking",
           parameters: [
-            { $ref: "#/components/parameters/chainId" },
+            {
+              name: "chainId",
+              in: "query",
+              description: "EVM Network chain ID (only Avalanche 43114 is supported)",
+              required: true,
+              schema: {
+                type: "number",
+              },
+              example: 43114,
+            },
             {
               in: "query",
               name: "amount",
@@ -185,30 +194,18 @@ This assistant follows these specifications with zero deviation to ensure secure
               schema: {
                 type: "number",
               },
-              description: "Amount of AVAX to stake in AVAX units (e.g., 1.5 AVAX)",
+              description: "Amount of tokens to stake/unstake in token units (e.g., 1.5 AVAX or 1.5 sAVAX)",
             },
-          ],
-          responses: {
-            "200": { $ref: "#/components/responses/SignRequestResponse200" },
-            "400": { $ref: "#/components/responses/BadRequest400" },
-          },
-        },
-        post: {
-          tags: ["benqi"],
-          summary: "Unstake sAVAX for AVAX",
-          description: "Unstake sAVAX tokens to receive AVAX through BENQI Liquid Staking. Note: Unstaking has a 15-day unlock period.",
-          operationId: "unstake-savax",
-          parameters: [
-            { $ref: "#/components/parameters/chainId" },
             {
               in: "query",
-              name: "amount",
+              name: "action",
               required: true,
               schema: {
-                type: "number",
+                type: "string",
+                enum: ["stake", "unstake", "withdraw"]
               },
-              description: "Amount of sAVAX to unstake in sAVAX units (e.g., 1.5 sAVAX)",
-            },
+              description: "Action to perform: 'stake' to convert AVAX to sAVAX, or 'unstake' to convert sAVAX to AVAX, or 'withdraw' to withdraw sAVAX to your wallet",
+            }
           ],
           responses: {
             "200": { $ref: "#/components/responses/SignRequestResponse200" },

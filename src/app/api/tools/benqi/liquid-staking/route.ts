@@ -10,25 +10,26 @@ import {
 } from "@bitte-ai/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
 import { stakeAvaxTransaction, unstakeSavaxTransaction, getSavaxToAvaxRate } from "../util";
+  
+const chainId = 43114;
 
 interface StakeInput {
-  chainId: number;
   amount: number; // AVAX amount in token units (e.g., 1.5 AVAX)
+  action: string; // "stake" or "unstake"
 }
 
-interface UnstakeInput {
-  chainId: number;
-  amount: number; // sAVAX amount in token units
-}
-
-const stakeFieldParsers: FieldParser<StakeInput> = {
-  chainId: numberField,
+const fieldParsers: FieldParser<StakeInput> = {
   amount: floatField,
-};
-
-const unstakeFieldParsers: FieldParser<UnstakeInput> = {
-  chainId: numberField,
-  amount: floatField,
+  action: (param: string | null, name: string): string => {
+    if (!param) {
+      throw new Error(`${name} is required`);
+    }
+    const action = param.toLowerCase();
+    if (action !== "stake" && action !== "unstake" && action !== "withdraw") {
+      throw new Error(`${name} must be either "stake" or "unstake" or "withdraw"`);
+    }
+    return action;
+  }
 };
 
 // Handle CORS preflight requests
@@ -47,86 +48,74 @@ export async function OPTIONS(request: NextRequest) {
   });
 }
 
-// Handler for staking AVAX to get sAVAX
+// Handler for both staking AVAX to get sAVAX and unstaking sAVAX to get AVAX
 export async function GET(req: NextRequest): Promise<NextResponse> {
   console.log("benqi/liquid-staking GET request", req.url);
-  return handleRequest(req, stakeLogic, (result) => NextResponse.json(result));
+  return handleRequest(req, liquidStakingLogic, (result) => NextResponse.json(result));
 }
 
-// Handler for unstaking sAVAX to get AVAX
-export async function POST(req: NextRequest): Promise<NextResponse> {
-  console.log("benqi/liquid-staking POST request", req.url);
-  return handleRequest(req, unstakeLogic, (result) => NextResponse.json(result));
-}
-
-async function stakeLogic(req: NextRequest): Promise<TxData> {
+async function liquidStakingLogic(req: NextRequest): Promise<TxData | { message: string } | undefined> {
   const url = new URL(req.url);
   const search = url.searchParams;
-  console.log("benqi/liquid-staking/stake params:", Object.fromEntries(search.entries()));
+  console.log("benqi/liquid-staking params:", Object.fromEntries(search.entries()));
   
-  const { chainId, amount } = validateInput<StakeInput>(search, stakeFieldParsers);
-  
+  const { amount, action } = validateInput<StakeInput>(search, fieldParsers);
+
   // Ensure chainId is supported
   if (chainId !== 43114) {
     throw new Error(`ChainId ${chainId} not supported for BENQI Liquid Staking. Supported chains: Avalanche (43114)`);
   }
   
-  // Convert AVAX amount to wei (decimal places for AVAX is 18)
+  // Convert amount to wei (decimal places for AVAX/sAVAX is 18)
   const amountInWei = parseUnits(amount.toString(), 18);
   
   // Get current exchange rate for informational purposes
   const exchangeRate = await getSavaxToAvaxRate();
-  const expectedSavaxAmount = amount / exchangeRate;
   
-  console.log(`Staking ${amount} AVAX for approximately ${expectedSavaxAmount} sAVAX at rate ${exchangeRate}`);
-  
-  return {
-    transaction: signRequestFor({
-      chainId,
-      metaTransactions: [
-        stakeAvaxTransaction(amountInWei, chainId)
-      ],
-    }),
-    meta: {
-      expectedSavaxAmount: expectedSavaxAmount.toFixed(6),
-      exchangeRate: exchangeRate.toFixed(6),
-      message: `Staking ${amount} AVAX for approximately ${expectedSavaxAmount.toFixed(6)} sAVAX`
-    }
-  };
-}
+  if (action === "stake") {
+    // Staking AVAX to get sAVAX
+    const expectedSavaxAmount = amount / exchangeRate;
+    
+    console.log(`Staking ${amount} AVAX for approximately ${expectedSavaxAmount} sAVAX at rate ${exchangeRate}`);
+    
+    return {
+      transaction: signRequestFor({
+        chainId,
+        metaTransactions: [
+          stakeAvaxTransaction(amountInWei, chainId)
+        ],
+      }),
+      meta: {
+        expectedSavaxAmount: expectedSavaxAmount.toFixed(6),
+        exchangeRate: exchangeRate.toFixed(6),
+        message: `Staking ${amount} AVAX for approximately ${expectedSavaxAmount.toFixed(6)} sAVAX`
+      }
+    };
+  } else if (action === "unstake") {
+    // Unstaking sAVAX to get AVAX
+    const expectedAvaxAmount = amount * exchangeRate;
+    
+    console.log(`Unstaking ${amount} sAVAX for approximately ${expectedAvaxAmount} AVAX at rate ${exchangeRate}`);
+    
+    return {
+      transaction: signRequestFor({
+        chainId,
+        metaTransactions: [
+          unstakeSavaxTransaction(amountInWei, chainId)
+        ],
+      }),
+      meta: {
+        expectedAvaxAmount: expectedAvaxAmount.toFixed(6),
+        exchangeRate: exchangeRate.toFixed(6),
+        message: `Unstaking ${amount} sAVAX for approximately ${expectedAvaxAmount.toFixed(6)} AVAX. Note: Actual AVAX will be available after a 15-day unlock period.`
+      }
+    };
+  } else if (action === "withdraw") {
 
-async function unstakeLogic(req: NextRequest): Promise<TxData> {
-  const url = new URL(req.url);
-  const search = url.searchParams;
-  console.log("benqi/liquid-staking/unstake params:", Object.fromEntries(search.entries()));
-  
-  const { chainId, amount } = validateInput<UnstakeInput>(search, unstakeFieldParsers);
-  
-  // Ensure chainId is supported
-  if (chainId !== 43114) {
-    throw new Error(`ChainId ${chainId} not supported for BENQI Liquid Staking. Supported chains: Avalanche (43114)`);
-  }
-  
-  // Convert sAVAX amount to wei (decimal places for sAVAX is 18)
-  const amountInWei = parseUnits(amount.toString(), 18);
-  
-  // Get current exchange rate for informational purposes
-  const exchangeRate = await getSavaxToAvaxRate();
-  const expectedAvaxAmount = amount * exchangeRate;
-  
-  console.log(`Unstaking ${amount} sAVAX for approximately ${expectedAvaxAmount} AVAX at rate ${exchangeRate}`);
-  
-  return {
-    transaction: signRequestFor({
-      chainId,
-      metaTransactions: [
-        unstakeSavaxTransaction(amountInWei, chainId)
-      ],
-    }),
-    meta: {
-      expectedAvaxAmount: expectedAvaxAmount.toFixed(6),
-      exchangeRate: exchangeRate.toFixed(6),
-      message: `Unstaking ${amount} sAVAX for approximately ${expectedAvaxAmount.toFixed(6)} AVAX. Note: Actual AVAX will be available after a 15-day unlock period.`
+    return {
+      message: `Visit https://app.benqi.fi/savax to withdraw your sAVAX to your wallet`
     }
-  };
-} 
+    
+  }
+
+}

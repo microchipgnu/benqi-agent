@@ -1,4 +1,5 @@
-import { Address, getAddress } from "viem";
+import { BENQI_SAVAX_ABI } from "@/src/abi";
+import { Address, encodeFunctionData, getAddress } from "viem";
 
 // Type for our contracts mapping
 type ChainContracts = {
@@ -57,15 +58,17 @@ export function stakeAvaxTransaction(
 // Function to create an unstake sAVAX transaction
 export function unstakeSavaxTransaction(
   amount: bigint,
-  chainId: number = 43114
+  chainId: number = 43114,
 ): MetaTransaction {
-  // Mocked unstake function signature (should be replaced with actual function)
-  const unstakeFunc = "0x1e9a6950"; // This is a placeholder and needs to be replaced with actual function selector
-  const encodedAmount = amount.toString().padStart(64, "0");
+  const data = encodeFunctionData({
+    abi: BENQI_SAVAX_ABI,
+    functionName: 'requestUnlock',
+    args: [amount]
+  })
   
   return {
     to: BENQI_CONTRACTS[chainId].liquidStaking,
-    data: `${unstakeFunc}${encodedAmount}`,
+    data: data,
     value: "0x0",
   };
 }
