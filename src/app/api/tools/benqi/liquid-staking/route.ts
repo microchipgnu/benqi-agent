@@ -67,8 +67,8 @@ async function stakeLogic(req: NextRequest): Promise<TxData> {
   const { chainId, amount } = validateInput<StakeInput>(search, stakeFieldParsers);
   
   // Ensure chainId is supported
-  if (chainId !== 43114 && chainId !== 43113) {
-    throw new Error(`ChainId ${chainId} not supported for BENQI Liquid Staking. Supported chains: Avalanche (43114) and Fuji Testnet (43113)`);
+  if (chainId !== 43114) {
+    throw new Error(`ChainId ${chainId} not supported for BENQI Liquid Staking. Supported chains: Avalanche (43114)`);
   }
   
   // Convert AVAX amount to wei (decimal places for AVAX is 18)
@@ -103,8 +103,8 @@ async function unstakeLogic(req: NextRequest): Promise<TxData> {
   const { chainId, amount } = validateInput<UnstakeInput>(search, unstakeFieldParsers);
   
   // Ensure chainId is supported
-  if (chainId !== 43114 && chainId !== 43113) {
-    throw new Error(`ChainId ${chainId} not supported for BENQI Liquid Staking. Supported chains: Avalanche (43114) and Fuji Testnet (43113)`);
+  if (chainId !== 43114) {
+    throw new Error(`ChainId ${chainId} not supported for BENQI Liquid Staking. Supported chains: Avalanche (43114)`);
   }
   
   // Convert sAVAX amount to wei (decimal places for sAVAX is 18)

@@ -97,8 +97,8 @@ async function depositLogic(req: NextRequest): Promise<TxData> {
   const { chainId, amount, tokenOrSymbol, marketType } = validateInput<DepositInput>(search, depositFieldParsers);
   
   // Ensure chainId is supported
-  if (chainId !== 43114 && chainId !== 43113) {
-    throw new Error(`ChainId ${chainId} not supported for BENQI Markets. Supported chains: Avalanche (43114) and Fuji Testnet (43113)`);
+  if (chainId !== 43114) {
+    throw new Error(`ChainId ${chainId} not supported for BENQI Markets. Supported chains: Avalanche (43114)`);
   }
   
   // Get token details
@@ -132,7 +132,7 @@ async function depositLogic(req: NextRequest): Promise<TxData> {
     transaction: signRequestFor({
       chainId,
       metaTransactions: [
-        depositToMarketsTransaction(address, amountInSmallestUnits, marketTypeEnum, chainId)
+        depositToMarketsTransaction(address, amountInSmallestUnits, marketTypeEnum, chainId, symbol)
       ],
     }),
     meta: {
@@ -153,8 +153,8 @@ async function borrowLogic(req: NextRequest): Promise<TxData> {
   const { chainId, amount, tokenOrSymbol, marketType } = validateInput<BorrowInput>(search, borrowFieldParsers);
   
   // Ensure chainId is supported
-  if (chainId !== 43114 && chainId !== 43113) {
-    throw new Error(`ChainId ${chainId} not supported for BENQI Markets. Supported chains: Avalanche (43114) and Fuji Testnet (43113)`);
+  if (chainId !== 43114) {
+    throw new Error(`ChainId ${chainId} not supported for BENQI Markets. Supported chains: Avalanche (43114)`);
   }
   
   // In ecosystem markets, only USDC can be borrowed

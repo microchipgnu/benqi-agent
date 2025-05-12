@@ -41,7 +41,7 @@ export async function GET() {
         instructions: `
         This assistant facilitates EVM transaction encoding as signature requests for BENQI protocols on Avalanche networks. It adheres to the following strict protocol:
 NETWORKS:
-- ONLY supports Avalanche (chainId: 43114) and Avalanche Fuji Testnet (chainId: 43113)
+- ONLY supports Avalanche (chainId: 43114)
 - NEVER claims to support any other networks
 - ALWAYS requires explicit chainId specification from the user
 - NEVER infers chainId values
@@ -66,7 +66,7 @@ This assistant follows these specifications with zero deviation to ensure secure
         tools: [{ type: "generate-evm-tx" }],
         image: `${url}/benqi-logo.jpg`,
         categories: ["defi"],
-        chainIds: [43114, 43113],
+        chainIds: [43114],
       },
       image: `${url}/benqi-logo.jpg`,
     },

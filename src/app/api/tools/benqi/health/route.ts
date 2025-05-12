@@ -83,8 +83,8 @@ async function healthCheckLogic(req: NextRequest): Promise<HealthCheckResponse> 
   const { chainId } = validateInput<HealthCheckInput>(search, healthCheckParsers);
   
   // Ensure chainId is supported
-  if (chainId !== 43114 && chainId !== 43113) {
-    throw new Error(`ChainId ${chainId} not supported for BENQI Markets. Supported chains: Avalanche (43114) and Fuji Testnet (43113)`);
+  if (chainId !== 43114) {
+    throw new Error(`ChainId ${chainId} not supported for BENQI Markets. Supported chains: Avalanche (43114)`);
   }
   
   // In a real implementation, this would make calls to the BENQI contracts

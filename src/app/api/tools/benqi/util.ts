@@ -19,13 +19,14 @@ const BENQI_CONTRACTS: ChainContracts = {
     marketsCore: "0x486Af39519B4Dc9a7fCcd318217352830E8AD9b4" as Address, // BENQI Core Markets Unitroller
     marketsEcosystem: "0x3344e55C6DDE2A01F4ED893f97bAc1c99F5f217B" as Address, // BENQI Ecosystem Markets Unitroller
   },
-  // Fuji testnet
-  43113: {
-    liquidStaking: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE" as Address, // Update with actual testnet address
-    savaxToken: "0x2b2C81e08f1Af8835a78Bb2A90AE924ACE0eA4bE" as Address, // Update with actual testnet address
-    marketsCore: "0x64478Bf5B8e2EE74a3430A4D6846Cdd0F2A4d1DD" as Address, // Testnet Core Markets address
-    marketsEcosystem: "0x08Cb31026155BC7E44210Fc05CF13DE6eF03FCb6" as Address, // Testnet Ecosystem Markets address
-  },
+};
+
+// Add BENQI token contract addresses
+const BENQI_TOKEN_CONTRACTS: {[chainId: number]: {[symbol: string]: Address}} = {
+  43114: {
+    'AVAX': '0x5C0401e81Bc07Ca70fAD469b451682c0d747Ef1c' as Address, // qiAVAX token contract
+    // Add other token contracts as needed
+  }
 };
 
 // Market types
@@ -81,26 +82,44 @@ export function depositToMarketsTransaction(
   tokenAddress: Address,
   amount: bigint,
   marketType: MarketType,
-  chainId: number = 43114
+  chainId: number = 43114,
+  tokenSymbol?: string
 ): MetaTransaction {
-  // Get the appropriate market contract based on market type
-  const marketContract = marketType === MarketType.CORE 
-    ? BENQI_CONTRACTS[chainId].marketsCore 
-    : BENQI_CONTRACTS[chainId].marketsEcosystem;
+  // Handle native AVAX deposits differently
+  const isNativeAVAX = tokenSymbol === 'AVAX' || tokenAddress.toLowerCase() === '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'.toLowerCase(); // WAVAX address
   
-  // For Compound-style lending, we need to call the qiToken contract for the specific asset
-  // Function selector for "mint(address,uint256)" in BENQI
-  const mintFunctionSelector = "0x4b8a3529";
-  
-  // Encode parameters: token address (32 bytes) + amount (32 bytes)
-  const encodedToken = tokenAddress.slice(2).toLowerCase().padStart(64, "0");
-  const encodedAmount = amount.toString(16).padStart(64, "0");
-  
-  return {
-    to: marketContract,
-    data: `${mintFunctionSelector}${encodedToken}${encodedAmount}`,
-    value: "0x0",
-  };
+  if (isNativeAVAX) {
+    // For native AVAX, we interact directly with qiAVAX token contract
+    const qiAvaxContract = BENQI_TOKEN_CONTRACTS[chainId]['AVAX'];
+    
+    // Use mint() function without parameters for native AVAX
+    const mintFunctionSelector = "0x1249c58b";
+    
+    return {
+      to: qiAvaxContract,
+      data: mintFunctionSelector, // No parameters needed
+      value: amount.toString(), // Send AVAX with the transaction
+    };
+  } else {
+    // For ERC-20 tokens, use the markets contract
+    const marketContract = marketType === MarketType.CORE 
+      ? BENQI_CONTRACTS[chainId].marketsCore 
+      : BENQI_CONTRACTS[chainId].marketsEcosystem;
+    
+    // For Compound-style lending, we need to call the mint/supply function
+    // Function selector for mint/supply in BENQI
+    const mintFunctionSelector = "0xa0712d68"; // This is the correct selector for mint/supply
+    
+    // Encode parameters: token address (32 bytes) + amount (32 bytes)
+    const encodedToken = tokenAddress.slice(2).toLowerCase().padStart(64, "0");
+    const encodedAmount = amount.toString(16).padStart(64, "0");
+    
+    return {
+      to: marketContract,
+      data: `${mintFunctionSelector}${encodedToken}${encodedAmount}`,
+      value: "0x0",
+    };
+  }
 }
 
 // Function to create a borrow transaction for BENQI Markets
@@ -115,9 +134,8 @@ export function borrowFromMarketsTransaction(
     ? BENQI_CONTRACTS[chainId].marketsCore 
     : BENQI_CONTRACTS[chainId].marketsEcosystem;
   
-  // For Compound-style lending, we need to call the specific function for borrowing the asset
-  // Function selector for "borrow(address,uint256)" in BENQI
-  const borrowFunctionSelector = "0xda3d454c";
+  // Function selector for borrowing in BENQI (0x4b8a3529 as seen in the transaction)
+  const borrowFunctionSelector = "0x4b8a3529";
   
   // Encode parameters: token address (32 bytes) + amount (32 bytes)
   const encodedToken = tokenAddress.slice(2).toLowerCase().padStart(64, "0");
