@@ -47,7 +47,28 @@ export async function getTokenMap(): Promise<BlockchainMapping> {
   
   // Otherwise, fetch a new token map
   console.log("Loading TokenMap...");
-  tokenMapCache = await loadTokenMap(getEnvVar("TOKEN_MAP_URL"));
+  const primaryTokenMap = await loadTokenMap(getEnvVar("TOKEN_MAP_URL"));
+  const alternativeTokenMap = await loadTokenMap(getEnvVar("TOKEN_MAP_URL_2"));
+  
+  // Merge the two token maps
+  const mergedTokenMap: BlockchainMapping = { ...primaryTokenMap };
+  
+  // Iterate through all chains in the alternative token map
+  for (const chainId in alternativeTokenMap) {
+    if (!mergedTokenMap[chainId]) {
+      // If chain doesn't exist in primary map, add it completely
+      mergedTokenMap[chainId] = alternativeTokenMap[chainId];
+    } else {
+      // If chain exists, merge the tokens
+      mergedTokenMap[chainId] = {
+        ...mergedTokenMap[chainId],
+        ...alternativeTokenMap[chainId]
+      };
+    }
+  }
+  
+  // Update the cache
+  tokenMapCache = mergedTokenMap;
   tokenMapLastFetch = now;
   
   return tokenMapCache;

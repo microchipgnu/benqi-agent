@@ -105,9 +105,11 @@ async function depositLogic(req: NextRequest): Promise<TxData> {
   let tokenDetails;
   try {
     const tokenMap = await getTokenMap();
+    // Convert tokenOrSymbol to lowercase to ensure case-insensitive matching
+    const normalizedToken = typeof tokenOrSymbol === 'string' ? tokenOrSymbol.toLowerCase() : tokenOrSymbol;
     tokenDetails = await getTokenDetails(
       chainId,
-      tokenOrSymbol,
+      normalizedToken,
       tokenMap,
     );
   } catch (error) {
@@ -166,9 +168,11 @@ async function borrowLogic(req: NextRequest): Promise<TxData> {
   let tokenDetails;
   try {
     const tokenMap = await getTokenMap();
+    // Convert tokenOrSymbol to lowercase to ensure case-insensitive matching
+    const normalizedToken = typeof tokenOrSymbol === 'string' ? tokenOrSymbol.toLowerCase() : tokenOrSymbol;
     tokenDetails = await getTokenDetails(
       chainId,
-      tokenOrSymbol,
+      normalizedToken,
       tokenMap,
     );
   } catch (error) {
