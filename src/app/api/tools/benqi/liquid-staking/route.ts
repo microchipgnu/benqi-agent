@@ -1,15 +1,14 @@
-import { parseUnits } from "viem";
 import {
   floatField,
-  numberField,
+  handleRequest,
+  signRequestFor,
   validateInput,
   type FieldParser,
-  signRequestFor,
-  handleRequest,
-  type TxData,
+  type TxData
 } from "@bitte-ai/agent-sdk";
 import { NextRequest, NextResponse } from "next/server";
-import { stakeAvaxTransaction, unstakeSavaxTransaction, getSavaxToAvaxRate } from "../util";
+import { parseUnits } from "viem";
+import { getSavaxToAvaxRate, stakeAvaxTransaction, unstakeSavaxTransaction } from "../util";
   
 const chainId = 43114;
 

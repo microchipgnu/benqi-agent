@@ -1,5 +1,5 @@
 import { BENQI_SAVAX_ABI } from "@/src/abi";
-import { Address, encodeFunctionData, getAddress } from "viem";
+import { Address, encodeFunctionData } from "viem";
 
 // Type for our contracts mapping
 type ChainContracts = {
