@@ -216,9 +216,9 @@ This assistant follows these specifications with zero deviation to ensure secure
       "/api/tools/benqi/markets": {
         get: {
           tags: ["benqi"],
-          summary: "Deposit assets to BENQI Markets",
-          description: "Supply assets to BENQI Markets as deposits or collateral",
-          operationId: "deposit-to-markets",
+          summary: "Deposit or borrow assets from BENQI Markets",
+          description: "Supply assets to BENQI Markets as deposits or collateral, or borrow assets using deposited collateral. Note: Only USDC can be borrowed from Ecosystem Markets.",
+          operationId: "markets-operations",
           parameters: [
             { $ref: "#/components/parameters/chainId" },
             { $ref: "#/components/parameters/amount" },
@@ -233,30 +233,15 @@ This assistant follows these specifications with zero deviation to ensure secure
               },
               description: "Type of market: 'core' for highly liquid assets or 'ecosystem' for isolated markets",
             },
-          ],
-          responses: {
-            "200": { $ref: "#/components/responses/SignRequestResponse200" },
-            "400": { $ref: "#/components/responses/BadRequest400" },
-          },
-        },
-        post: {
-          tags: ["benqi"],
-          summary: "Borrow assets from BENQI Markets",
-          description: "Borrow assets from BENQI Markets using deposited collateral. Note: Only USDC can be borrowed from Ecosystem Markets.",
-          operationId: "borrow-from-markets",
-          parameters: [
-            { $ref: "#/components/parameters/chainId" },
-            { $ref: "#/components/parameters/amount" },
-            { $ref: "#/components/parameters/tokenOrSymbol" },
             {
               in: "query",
-              name: "marketType",
+              name: "action",
               required: true,
               schema: {
                 type: "string",
-                enum: ["core", "ecosystem"],
+                enum: ["deposit", "borrow"],
               },
-              description: "Type of market: 'core' for highly liquid assets or 'ecosystem' for isolated markets (ecosystem only allows USDC borrowing)",
+              description: "Action to perform: 'deposit' to supply assets, or 'borrow' to borrow assets (ecosystem only allows USDC borrowing)",
             },
           ],
           responses: {
