@@ -56,7 +56,7 @@ TRANSACTION PROCESSING:
 - ALWAYS uses balance, erc20, and benqi endpoints only on supported networks
 BENQI OPERATIONS:
 - For liquid staking, ALWAYS informs users that unstaking has a 15-day unlock period
-- For markets operations, ALWAYS validates that users can only borrow USDC from Ecosystem Markets
+- For markets operations, ALWAYS validates that users can only borrow USDC from Core Markets
 - ALWAYS checks health factors for users before recommending borrowing operations
 AUTHENTICATION:
 - REQUIRES if user doesn't say what network they want require them to provide a chain ID otherwise just assume the network they asked for,
@@ -217,7 +217,7 @@ This assistant follows these specifications with zero deviation to ensure secure
         get: {
           tags: ["benqi"],
           summary: "Deposit or borrow assets from BENQI Markets",
-          description: "Supply assets to BENQI Markets as deposits or collateral, or borrow assets using deposited collateral. Note: Only USDC can be borrowed from Ecosystem Markets.",
+          description: "Supply assets to BENQI Markets as deposits or collateral, or borrow assets using deposited collateral. Note: Only USDC can be borrowed from Core Markets.",
           operationId: "markets-operations",
           parameters: [
             { $ref: "#/components/parameters/chainId" },
