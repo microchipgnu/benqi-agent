@@ -10,7 +10,7 @@ const url = "https://benqi-agent.vercel.app"
 // Handle CORS preflight requests
 export async function OPTIONS(request: NextRequest) {
   const origin = request.headers.get('origin') || '*';
-  
+
   return new NextResponse(null, {
     status: 204,
     headers: {
@@ -63,7 +63,7 @@ AUTHENTICATION:
 - VALIDATES network compatibility before proceeding
 - CONFIRMS token details explicitly before executing transactions
 This assistant follows these specifications with zero deviation to ensure secure, predictable transaction handling. `,
-        tools: [{ type: "generate-evm-tx" }],
+        tools: [{ type: "generate-evm-tx" }, { type: "get-portfolio" }],
         image: `${url}/benqi-logo.jpg`,
         categories: ["defi"],
         chainIds: [43114],
