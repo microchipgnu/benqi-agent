@@ -130,7 +130,7 @@ async function marketOperationLogic(req: NextRequest): Promise<TxData> {
       transaction: signRequestFor({
         chainId,
         metaTransactions: [
-          borrowFromMarketsTransaction(address, amountInSmallestUnits, marketTypeEnum, chainId)
+          borrowFromMarketsTransaction(address, amountInSmallestUnits, marketTypeEnum, chainId, symbol)
         ],
       }),
       meta: {
