@@ -33,7 +33,7 @@ const BENQI_TOKEN_CONTRACTS: {[chainId: number]: {[symbol: string]: Address}} = 
 // Add BENQI market token contract addresses
 const BENQI_MARKET_CONTRACTS: {[chainId: number]: {[token: string]: Address}} = {
   43114: {
-    'USDCn': '0xB715808a78F6041E46d61Cb123C9B4A27056AE9C' as Address,
+    'USDC': '0xB715808a78F6041E46d61Cb123C9B4A27056AE9C' as Address, // USDCn token contract
     // Add other market contracts as needed
   }
 };
