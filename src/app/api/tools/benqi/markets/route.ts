@@ -81,11 +81,6 @@ async function marketOperationLogic(req: NextRequest): Promise<TxData> {
     throw new Error(`ChainId ${chainId} not supported for BENQI Markets. Supported chains: Avalanche (43114)`);
   }
   
-  // In ecosystem markets, only USDC can be borrowed
-  if (action === "borrow" && marketType === "ecosystem" && tokenOrSymbol.toUpperCase() !== "USDC") {
-    throw new Error("Only USDC can be borrowed from Ecosystem Markets");
-  }
-  
   // Get token details
   let tokenDetails;
   try {

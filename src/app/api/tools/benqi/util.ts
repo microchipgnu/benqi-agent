@@ -30,6 +30,14 @@ const BENQI_TOKEN_CONTRACTS: {[chainId: number]: {[symbol: string]: Address}} = 
   }
 };
 
+// Add BENQI market token contract addresses
+const BENQI_MARKET_CONTRACTS: {[chainId: number]: {[token: string]: Address}} = {
+  43114: {
+    'USDCn': '0xB715808a78F6041E46d61Cb123C9B4A27056AE9C' as Address,
+    // Add other market contracts as needed
+  }
+};
+
 // Market types
 export enum MarketType {
   CORE = "core",
@@ -130,25 +138,45 @@ export function borrowFromMarketsTransaction(
   tokenAddress: Address,
   amount: bigint,
   marketType: MarketType,
-  chainId: number = 43114
+  chainId: number = 43114,
+  tokenSymbol?: string
 ): MetaTransaction {
-  // Get the appropriate market contract based on market type
-  const marketContract = marketType === MarketType.CORE 
-    ? BENQI_CONTRACTS[chainId].marketsCore 
-    : BENQI_CONTRACTS[chainId].marketsEcosystem;
-  
-  // Function selector for borrowing in BENQI (0x4b8a3529 as seen in the transaction)
-  const borrowFunctionSelector = "0x4b8a3529";
-  
-  // Encode parameters: token address (32 bytes) + amount (32 bytes)
-  const encodedToken = tokenAddress.slice(2).toLowerCase().padStart(64, "0");
-  const encodedAmount = amount.toString(16).padStart(64, "0");
-  
-  return {
-    to: marketContract,
-    data: `${borrowFunctionSelector}${encodedToken}${encodedAmount}`,
-    value: "0x0",
-  };
+  // If we have a known market contract for this token, use it directly
+  if (tokenSymbol && BENQI_MARKET_CONTRACTS[chainId]?.[tokenSymbol]) {
+    // Direct interaction with the token market contract
+    const marketContract = BENQI_MARKET_CONTRACTS[chainId][tokenSymbol];
+    
+    // Function selector for borrow in BENQI token markets
+    const borrowFunctionSelector = "0xc5ebeaec"; // borrow(uint256 borrowAmount)
+    
+    // Encode only the amount parameter (32 bytes)
+    const encodedAmount = amount.toString(16).padStart(64, "0");
+    
+    return {
+      to: marketContract,
+      data: `${borrowFunctionSelector}${encodedAmount}`,
+      value: "0x0",
+    };
+  } else {
+    // Fallback to the controller approach for unknown tokens
+    // Get the appropriate market controller based on market type
+    const marketController = marketType === MarketType.CORE 
+      ? BENQI_CONTRACTS[chainId].marketsCore 
+      : BENQI_CONTRACTS[chainId].marketsEcosystem;
+    
+    // Function selector for borrowing through controller
+    const borrowFunctionSelector = "0x4b8a3529";
+    
+    // Encode parameters: token address (32 bytes) + amount (32 bytes)
+    const encodedToken = tokenAddress.slice(2).toLowerCase().padStart(64, "0");
+    const encodedAmount = amount.toString(16).padStart(64, "0");
+    
+    return {
+      to: marketController,
+      data: `${borrowFunctionSelector}${encodedToken}${encodedAmount}`,
+      value: "0x0",
+    };
+  }
 }
 
 // Helper for common operations across BENQI endpoints
